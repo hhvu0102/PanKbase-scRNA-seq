@@ -25,4 +25,4 @@ This directory contains Jupyter notebooks with details about how to execute code
 - `2_integration.R.ipynb`: Jupyter notebook with instructions on how to integrate data across multiple tissue sources, how to remove outlier clusters, and annotate cell populations.
 
 ## Contact
-Ha Vu <vthihong at umich.edu> and Stephen Parker <scjp at umich.edu>
+Ha Vu (vthihong at umich.edu) and Stephen Parker (scjp at umich.edu)
