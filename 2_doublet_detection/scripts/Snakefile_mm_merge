@@ -1,0 +1,40 @@
+DONOR = ["SRR12831415", "SRR12831416", "SRR17168076", "SRR17168077", "SRR17168079", "SRR18858546", "SRR18858547", "SRR18858548", "SRR18858549", "SRR18858550", "SRR18858551", "SRR18858552", "SRR18858553", "SRR18858554", "SRR18858555", "SRR18858556", "SRR18858557", "SRR22266773", "SRR22266774", "SRR22266775", "SRR27307488", "SRR27307489", "SRR27307490", "SRR27307491", "SRR27307492", "SRR27307493", "SRR27307494", "SRR27307495", "SRR27307496", "SRR27307497", "SRR27307498", "SRR27307499", "SRR27307500", "SRR27307501", "SRR27307502", "SRR27307503", "SRR27307504", "SRR27307505", "SRR27307506", "SRR27307507", "SRR27307508", "SRR27307509", "SRR27307510", "SRR27307511", "SRR27307512", "SRR27307513", "SRR27307514", "SRR27307515", "SRR27307516", "SRR27307517", "SRR27307518", "SRR27307519", "SRR27307520", "SRR27307521", "SRR27307522", "SRR27307523", "SRR27307524", "SRR27307525", "SRR27307526", "SRR27307527", "SRR27307528", "SRR27307529", "SRR27307530", "SRR27307531", "SRR27307532", "SRR27307533", "SRR27307534", "SRR27307535", "SRR27307536", "SRR27307537", "SRR27307538", "SRR27307539", "SRR27307540", "SRR27307541", "SRR27307542", "SRR27307543", "SRR27307544", "SRR27307545", "SRR27307546", "SRR27307547", "SRR27307548", "SRR27307549", "SRR27307550", "SRR27307551", "SRR27307552", "SRR27307553", "SRR27307554", "SRR27307555", "SRR27307556", "SRR27307557", "SRR27307558", "SRR27307559", "SRR27307560", "SRR27307561", "SRR27307562", "SRR27307563", "SRR27307564", "SRR27307565", "SRR27307566", "SRR27307567", "SRR27307568", "SRR27307569", "SRR27307570", "SRR27307571", "SRR27307572", "SRR27307573", "SRR27307574", "SRR27307575", "SRR27307576", "SRR27307577", "SRR27307578", "SRR27307579"] 
+
+rule targets:
+	input:
+		expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/temp_barcodes/{donor}.barcodes.tsv", donor = DONOR),
+		"/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/Prodo_merged.barcodes.tsv",
+		"/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/Prodo_merged.features.tsv",
+		"/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/Prodo_merged.matrix.mtx"
+
+rule add_prefix_to_barcodes_before_postdecontamination_merge:
+	input:
+		barcodes = expand("/nfs/turbo/umms-scjp-pank/4_integration/data/202503_freeze/doubletfinder_round1/per-library/{{donor}}.barcodes.tsv", donor = DONOR)
+	output:
+		expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/temp_barcodes/{{donor}}.barcodes.tsv", donor = DONOR)
+	params:
+		donor = lambda wildcards: wildcards.donor,
+	shell:
+		"""
+		cat {input.barcodes} | perl -pe 's/^/{params.donor}-/' > {output}
+		"""
+
+rule mm_subset:
+	input:
+		barcodes = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/temp_barcodes/{donor}.barcodes.tsv", donor = DONOR),
+		features = expand("/nfs/turbo/umms-scjp-pank/4_integration/data/202503_freeze/doubletfinder_round1/per-library/{donor}.features.tsv", donor = DONOR),
+		matrix = expand("/nfs/turbo/umms-scjp-pank/4_integration/data/202503_freeze/doubletfinder_round1/per-library/{donor}.matrix.mtx", donor = DONOR)
+	output:
+		barcodes = "/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/Prodo_merged.barcodes.tsv",
+		features = "/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/Prodo_merged.features.tsv",
+		matrix = "/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/Prodo_merged.matrix.mtx"
+	shell:
+		"""
+		cd /nfs/turbo/umms-scjp-pank/4_integration/scripts/202503_freeze
+		ml singularity
+		singularity exec /scratch/scjp_root/scjp99/vthihong/singularity-cache/porchard-mm-20230104.img mm merge --matrices {input.matrix} --features {input.features} --barcodes {input.barcodes} --prefix Prodo_merged.
+		touch {output.barcodes}
+		touch {output.features}
+		touch {output.matrix}
+		"""
+

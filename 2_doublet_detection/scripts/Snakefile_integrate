@@ -1,0 +1,48 @@
+SOURCE = ["HPAP", "Prodo"]
+
+rule targets:
+	input:
+		expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/nonDup_proteinCoding_{source}_merged.barcodes.tsv", source = SOURCE),
+		expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/nonDup_proteinCoding_{source}_merged.features.tsv", source = SOURCE),
+		expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/nonDup_proteinCoding_{source}_merged.matrix.mtx", source = SOURCE),
+		expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doubletfinder_round1/nonDup_proteinCoding/singularity_{source}.rna.rds", source = SOURCE)
+
+rule mm_subset:
+	input:
+		barcodes = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/{{source}}_merged.barcodes.tsv", source = SOURCE),
+		features = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/{{source}}_merged.features.tsv", source = SOURCE),
+		matrix = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/{{source}}_merged.matrix.mtx", source = SOURCE),
+		keepfeatures = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/filtered_{{source}}_merged.features.tsv", source = SOURCE)
+	output:
+		barcodes = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/nonDup_proteinCoding_{{source}}_merged.barcodes.tsv", source = SOURCE),
+		features = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/nonDup_proteinCoding_{{source}}_merged.features.tsv", source = SOURCE),
+		matrix = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/nonDup_proteinCoding_{{source}}_merged.matrix.mtx", source = SOURCE)
+	params:
+		source = lambda wildcards: wildcards.source,
+	shell:
+		"""
+		cd /nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge
+		ml singularity
+		singularity exec /scratch/scjp_root/scjp99/vthihong/singularity-cache/porchard-mm-20230104.img mm subset --matrix {input.matrix} --features {input.features} --barcodes {input.barcodes} --keep-features {input.keepfeatures} --prefix nonDup_proteinCoding_{params.source}_merged.
+		touch {output.barcodes}
+		touch {output.features}
+		touch {output.matrix}
+		"""
+
+rule integrate:
+	input:
+		barcodes = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/nonDup_proteinCoding_{{source}}_merged.barcodes.tsv", source = SOURCE),
+		features = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/nonDup_proteinCoding_{{source}}_merged.features.tsv", source = SOURCE),
+		matrix = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/mm_merge/nonDup_proteinCoding_{{source}}_merged.matrix.mtx", source = SOURCE)
+	output:
+		rds = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doubletfinder_round1/nonDup_proteinCoding/singularity_{{source}}.rna.rds", source = SOURCE)     
+	params:
+		source = lambda wildcards: wildcards.source
+	shell:
+		"""
+		cd /nfs/turbo/umms-scjp-pank/4_integration/scripts/202503_freeze
+		module load singularity
+		singularity exec /home/vthihong/containers/r_4.3.1/r_4.3.1.sif Rscript /nfs/turbo/umms-scjp-pank/4_integration/scripts/202503_freeze/singularity_integrate_plotDoublets.R --matrix {input.matrix} --features {input.features} --barcodes {input.barcodes} --resolution 0.6 --pcs 30 --prefix {params.source} --dfdir "/nfs/turbo/umms-scjp-pank/4_integration/data/202503_freeze/doubletfinder_round1/" --threshold 20
+		
+		touch {output.rds}
+		"""
