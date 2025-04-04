@@ -1,0 +1,35 @@
+DONOR = ["HPAP-019", "HPAP-020", "HPAP-021"]
+
+rule targets:
+	input:
+		expand("/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/cellbender_default/qcPlots/{donor}_qcPlot.png", donor = DONOR),
+		expand("/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/cellbender_default/upsetPlots/{donor}_upsetPlot.png", donor = DONOR),
+		expand("/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/{donor}_metrics.csv", donor = DONOR),
+		expand("/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/{donor}_passQC_barcodes.csv", donor = DONOR)
+
+
+rule plotQC:
+	input:
+		knee = expand("/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39/emptyDrops/results/{{donor}}_knee.txt", donor = DONOR),
+		passQC = expand("/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39/emptyDrops/results/{{donor}}_pass.txt", donor = DONOR),
+		cellbender = expand("/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39/cellbender/cellbender_default/{{donor}}-hg38.cellbender_FPR_0.05.h5", donor = DONOR),
+		rnametrics = expand("/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39/qc/{{donor}}-hg38.qc.txt", donor = DONOR),
+		v2bc = "/nfs/turbo/umms-scjp-pank/1_HPAP/scripts/snRNAseq-NextFlow_v2/737K-august-2016.txt",
+		v3bc = "/nfs/turbo/umms-scjp-pank/1_HPAP/scripts/snRNAseq-NextFlow_v3/3M-february-2018.txt"
+	output:
+		qcPlot = "/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/cellbender_default/qcPlots/{donor}_qcPlot.png",
+		upsetPlot = "/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/cellbender_default/upsetPlots/{donor}_upsetPlot.png",
+		outmetrics = "/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/cellbender_default/{donor}_metrics.csv",
+		outbarcodes = "/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/cellbender_default/{donor}_passQC_barcodes.csv"
+	params:
+		donor = lambda wildcards: wildcards.donor,
+	log:
+		stdout = "/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/{donor}_warnings.out",
+		stderr = "/nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39_private/emptyDrops_freeze/results/pctMTusingBelowEndCliff_pctMtless30_FDR0.005/{donor}_warnings.err"
+	shell:
+		"""
+		source ~/jointMultiomes/bin/activate
+		python3 /nfs/turbo/umms-scjp-pank/4_integration/scripts/PanKbase-scRNA-seq/0_preprocessing/rnaQC_wCellBender.py --sample {params.donor} --v2bc {input.v2bc} --v3bc {input.v3bc} --knee {input.knee} --passBC {input.passQC} --cellbender {input.cellbender} --rnametrics {input.rnametrics} --starsolo /nfs/turbo/umms-scjp-pank/1_HPAP/results/rna/gencode_v39/starsolo/{params.donor}-hg38/{params.donor}-hg38.Solo.out/ --qcPlot {output.qcPlot} --upsetPlot {output.upsetPlot} --outmetrics {output.outmetrics} > {log.stdout} 2> {log.stderr}  
+		awk -F "," '{{ if ($17 == "True") {{ print $1 }} }}' {output.outmetrics} > {output.outbarcodes}
+		deactivate
+		"""
