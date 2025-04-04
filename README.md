@@ -22,8 +22,8 @@ This directory contains Jupyter notebooks with details about how to execute code
 This directory contains Jupyter notebooks with details about how to execute code, along with scripts (R/Python/Snakemake). <br>
 - `scripts`: directory contains scripts to run analyses. <br>
 - `1_getMetrics.ipynb`: Jupyter notebook with instructions on how to pull together multiple QC metrics. This script is different from `1_preprocessing/2_barcode_qc.ipynb` as it obtains metrics from CellBender modified setting runs, while at the earlier steps, metrics come from CellBender with default settings runs. <br>
-- `2_integration.R.ipynb`: Jupyter notebook with instructions on how to integrate data across multiple tissue sources, how to remove outlier clusters, and annotate cell populations.
-
+- `2_integration.R.ipynb`: Jupyter notebook with instructions on how to integrate data across multiple tissue sources and how to remove outlier clusters. <br>
+- `3_cell_annotation_final.R.ipynb`: Jupyter notebook with instructions on cell annotations.
 ## Container
 A Singularity container with R and python packages for integration step can be found at https://cloud.sylabs.io/library/hhvu/r_4.3.1/r_4.3.1
 
