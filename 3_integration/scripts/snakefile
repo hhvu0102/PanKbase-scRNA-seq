@@ -1,0 +1,43 @@
+SAMPLES = ["SRR10751487", "SRR10751488", "SRR10751489", "SRR10751490", "SRR10751492", "SRR10751493", "SRR10751494", "SRR10751495", "SRR10751496", "SRR10751497", "SRR10751498", "SRR10751499", "SRR10751500", "SRR10751501", "SRR12831415", "SRR12831416", "SRR12831418", "SRR12831419", "SRR17168069", "SRR17168070", "SRR17168071", "SRR17168076", "SRR17168077", "SRR17168079", "HP-21079-01__DHT_10nM", "HP-21077-01__DHT_10nM", "HP-21070-01__DHT_10nM", "HP-21079-01__EtOH", "HP-21077-01__EtOH", "HP-21070-01__EtOH", "SAMN16081314", "SRR22266775", "SRR22775778", "SRR22775779", "SRR22775780", "SRR22775781", "SRR22775784", "SRR22775785", "SRR22775786", "SRR22775787", "SRR22775788", "SRR22775791", "SRR22775792", "SRR22775795", "SRR22775796", "SRR22775797", "SRR22775798", "SRR22775801", "SRR22775802", "SRR22775805", "SRR22775806", "SRR22775807", "SRR22775808", "SRR22775809", "SRR22775810", "SRR22775811", "SRR22775812", "SRR22775815", "SRR22775816", "SRR22775817", "SRR22775818", "SRR22775819", "SRR22775820", "SAMN10439569__no_treatment", "SAMN10372788__no_treatment", "HP18306-01__no_treatment", "SRR22775833", "SRR22775834", "SRR22775835", "SRR22775836", "SRR22775837", "SRR22775838", "SRR22775839", "SRR22775840", "SRR27326986", "SRR27326987", "SRR27326992", "SRR27326993", "SRR27326994", "SRR27326995", "SRR27326996", "SRR27326997", "HPAP-019", "HPAP-020", "HPAP-021", "HPAP-022", "HPAP-023", "HPAP-024", "HPAP-026", "HPAP-028", "HPAP-029", "HPAP-032", "HPAP-034", "HPAP-035", "HPAP-036", "HPAP-037", "HPAP-038", "HPAP-039", "HPAP-040", "HPAP-042", "HPAP-043", "HPAP-044", "HPAP-045", "HPAP-047", "HPAP-049", "HPAP-050", "HPAP-051", "HPAP-052", "HPAP-053", "HPAP-054", "HPAP-055", "HPAP-056", "HPAP-057", "HPAP-058", "HPAP-059", "HPAP-061", "HPAP-063", "HPAP-064", "HPAP-065", "HPAP-070", "HPAP-071", "HPAP-072", "HPAP-074", "HPAP-075", "HPAP-079", "HPAP-080", "HPAP-081", "HPAP-082", "HPAP-083", "HPAP-084", "HPAP-085", "HPAP-087", "HPAP-091", "HPAP-092", "HPAP-095", "HPAP-096", "HPAP-097", "HPAP-099", "HPAP-100", "HPAP-101", "HPAP-103", "HPAP-104", "HPAP-105", "HPAP-106", "HPAP-107", "HPAP-108", "HPAP-109", "HPAP-110", "HPAP-111", "HPAP-113", "HPAP-114", "HPAP-117", "HPAP-118", "HPAP-119", "HPAP-120", "HPAP-122", "HPAP-123", "HPAP-124", "HPAP-126", "HPAP-077", "HP-21337-01__Untreated", "HP-21337-01__6hr_IL-1b", "HP-21337-01__6hr_IFN-g", "HP-21337-01__6hr_IL-1b+IFN-g", "HP-21337-01__18hr_IL-1b+IFN-g", "HP-21337-01__18hr_IL-1b+IFN-g+NMMA", "HP-21337-01__18_hr_NMMA", "HP-22234-01__Untreated", "HP-22234-01__6hr_IL-1b", "HP-22234-01__6hr_IFN-g", "HP-22234-01__6hr_IL-1b+IFN-g", "HP-22234-01__18hr_IL-1b", "HP-22234-01__18hr_IL-1b+IFN-g", "HP-22234-01__18hr_IL-1b+IFN-g+NMMA", "HP-22234-01__18_hr_NMMA", "HP-23135-01__Untreated", "HP-23135-01__6hr_IL-1b", "HP-23135-01__6hr_IFN-g", "HP-23135-01__6hr_IL-1b+IFN-g", "HP-23135-01__18hr_IL-1b", "HP-23135-01__18hr_IL-1b+IFN-g", "HP-23135-01__18hr_IL-1b+IFN-g+NMMA", "HP-23135-01__18_hr_NMMA", "HPAP-022__rep1__no_treatment", "HPAP-022__rep2__no_treatment", "HPAP-022__rep3__no_treatment", "SAMN08768781__rep1__no_treatment", "SAMN08768781__rep2__no_treatment", "SAMN08768783__rep1__no_treatment", "SAMN08768783__rep2__no_treatment", "SAMN08768783__rep3__no_treatment"]
+
+rule targets:
+	input:
+		expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doubletfinder_round2/nonDup_proteinCoding/pass-qc-nuclei-counts-with-doublets/rds/{sample}.rna.rds", sample = SAMPLES),
+		expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doublet_like/202504_freeze/enriched_cells/{sample}__enrichedCells.txt", sample = SAMPLES)
+
+rule rds:
+	input:
+		matrix = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doubletfinder_round2/nonDup_proteinCoding/pass-qc-nuclei-counts-with-doublets/{{sample}}.matrix.mtx", sample = SAMPLES),
+		feature = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doubletfinder_round2/nonDup_proteinCoding/pass-qc-nuclei-counts-with-doublets/{{sample}}.features.tsv", sample = SAMPLES),
+		barcode = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doubletfinder_round2/nonDup_proteinCoding/pass-qc-nuclei-counts-with-doublets/{{sample}}.barcodes.tsv", sample = SAMPLES)
+	output:
+		outRDS = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doubletfinder_round2/nonDup_proteinCoding/pass-qc-nuclei-counts-with-doublets/rds/{{sample}}.rna.rds", sample = SAMPLES),
+		outPlot = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doubletfinder_round2/nonDup_proteinCoding/pass-qc-nuclei-counts-with-doublets/rds/{{sample}}.plot.png", sample = SAMPLES)
+	params:
+		sample = lambda wildcards: wildcards.sample,
+	shell:
+		"""
+		cd /nfs/turbo/umms-scjp-pank/4_integration/scripts/202503_freeze
+		ml R/4.3.1
+		Rscript /nfs/turbo/umms-scjp-pank/4_integration/scripts/202503_freeze/plotDoublets_indivSamples.R --sample {params.sample} --matrix {input.matrix} --feature {input.feature} --barcode {input.barcode} --outRDS {output.outRDS} --outPlot {output.outPlot}
+
+		"""
+
+
+rule enrichment:
+	input:
+		rds = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doubletfinder_round2/nonDup_proteinCoding/pass-qc-nuclei-counts-with-doublets/rds/{{sample}}.rna.rds", sample = SAMPLES)
+	output:
+		outCells = expand("/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doublet_like/202504_freeze/enriched_cells/{{sample}}__enrichedCells.txt", sample = SAMPLES)
+	params:
+		sample = lambda wildcards: wildcards.sample,
+		outdir = "/nfs/turbo/umms-scjp-pank/4_integration/results/202503_freeze/doublet_like/202504_freeze/enriched_cells/"
+	shell:
+		"""
+		cd /nfs/turbo/umms-scjp-pank/4_integration/scripts/202503_freeze
+		ml R/4.3.1
+		Rscript /nfs/turbo/umms-scjp-pank/4_integration/scripts/202503_freeze/doublet_like/enriched_clusters.R  --sample {params.sample} --outdir {params.outdir}
+		touch {output.outCells}
+		"""
+
+

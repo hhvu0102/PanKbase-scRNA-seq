@@ -23,7 +23,7 @@ import argparse
 parser = argparse.ArgumentParser("Plot QC metrics per sample")
 parser.add_argument("-sample", "--sample", help="Donor ID.", type=str)
 parser.add_argument("-v2bc", "--v2bc", help="V2 chemistry whitelist barcodes.", type=str)
-parser.add_argument("-v3bc", "--v2bc", help="V3 chemistry whitelist barcodes.", type=str)
+parser.add_argument("-v3bc", "--v3bc", help="V3 chemistry whitelist barcodes.", type=str)
 parser.add_argument("-knee", "--knee", help="File with knee, infection and end cliff points.", type=str)
 parser.add_argument("-passBC", "--passBC", help="File with high qual cells by emptyDrops.", type=str)
 parser.add_argument("-cellbender", "--cellbender", help="Path to cellbender h5 file.", type=str)
@@ -39,7 +39,7 @@ sample = args.sample
 passQC = args.passBC
 knee = args.knee
 
-with open('/nfs/turbo/umms-scjp-pank/4_integration/data/202503_freeze/20250314_meta_runs.txt', 'r') as file: #hardcoded
+with open('/nfs/turbo/umms-scjp-pank/4_integration/data/202503_freeze/20250410_meta_runs.txt', 'r') as file: #hardcoded
     reader = csv.reader(file, delimiter='\t')
     for row in reader:
         if row[1] == sample:
@@ -334,7 +334,7 @@ metrics['pass_all_filters'] = metrics.filter(like='filter_').all(axis=1)
 
 
 # List of pass-QC barcodes
-pass_qc_nuclei = list(sorted(metrics[metrics.pass_all_filters].barcode.to_list()))
+pass_qc_cells = list(sorted(metrics[metrics.pass_all_filters].barcode.to_list()))
 
 fig, axs = plt.subplots(nrows=2, ncols=3, figsize=(5*3, 8))
 
@@ -376,7 +376,7 @@ ax.legend()
 ax.set_xlabel('Fraction ambient removed')
 ax.set_title('(F)')
 
-fig.suptitle('{:,} pass QC cells'.format(len(pass_qc_cells)) + " " + donor)
+fig.suptitle('{:,} pass QC cells'.format(len(pass_qc_cells)) + " " + sample)
 
 fig.tight_layout()
 fig.savefig(args.qcPlot, bbox_inches='tight', dpi=300)
